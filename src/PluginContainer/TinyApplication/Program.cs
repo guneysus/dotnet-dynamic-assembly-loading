@@ -43,9 +43,6 @@ namespace TinyApplication
         {
             var context = new PluginLoadContext(name: "Sandbox", isCollectible: false);
 
-            //context.Resolving += Context_Resolving;
-            //context.Unloading += Context_Unloading;
-
             LoadPlugin(context, new AssemblyName("HelloPlugin"));
 
             context.Assemblies.ToList().ForEach(x =>
@@ -62,21 +59,6 @@ namespace TinyApplication
             });
 
         }
-
-        //private static void Context_Unloading(AssemblyLoadContext self)
-        //{
-        //    Log($"UNLOADING {self.Name}");
-        //}
-
-        //private static System.Reflection.Assembly Context_Resolving(AssemblyLoadContext context, System.Reflection.AssemblyName assemblyName)
-        //{
-        //    Log($"RESOLVING ASSEMBLY: {assemblyName.FullName} at {context.Name}");
-        //    var assembly = Assembly.Load(PluginManager.GetAssemblyByteArrayFromFile(assemblyName));
-        //    Log($"RESOLVED ASSEMBLY: {assembly.FullName} at {context.Name}");
-        //    return assembly;
-        //}
-
-
     }
 
     public static class PluginManager
