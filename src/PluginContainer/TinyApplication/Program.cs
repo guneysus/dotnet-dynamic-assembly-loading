@@ -31,11 +31,11 @@ namespace TinyApplication
             Log($"UNLOADING {self.Name}");
         }
 
-        public static void ExecutePlugin()
+        public static void ExecutePlugin(AssemblyName assemblyName)
         {
             var context = new PluginLoadContext(name: "Sandbox", isCollectible: false);
 
-            context.LoadPlugin(new AssemblyName("HelloPlugin"));
+            context.LoadPlugin(assemblyName);
 
             context.Assemblies.ToList().ForEach(x =>
             {
@@ -64,7 +64,8 @@ namespace TinyApplication
     {
         private static void Main(string[] args)
         {
-            PluginLoadContext.ExecutePlugin();
+            var plugin = new AssemblyName("HelloPlugin");
+            PluginLoadContext.ExecutePlugin(plugin);
         }
 
     }
