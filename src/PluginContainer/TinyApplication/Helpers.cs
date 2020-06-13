@@ -11,11 +11,6 @@ namespace TinyApplication
             Console.WriteLine($"[{DateTime.Now.ToString("o")}] {message}");
         }
 
-        public static void LoadPlugin(AssemblyLoadContext context, AssemblyName assemblyName)
-        {
-            Log($"LOADING PLUGIN {assemblyName.Name}");
-            context.LoadFromStream(PluginManager.GetAssemblyMemoryStreamFromFile(assemblyName));
-            Log($"LOADED PLUGIN {assemblyName.Name}");
-        }
+
     }
 }
