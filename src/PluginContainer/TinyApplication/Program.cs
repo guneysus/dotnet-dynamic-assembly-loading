@@ -31,26 +31,6 @@ namespace TinyApplication
             Log($"UNLOADING {self.Name}");
         }
 
-        public void ExecutePlugin(AssemblyName plugin)
-        {
-
-        }
-
-        public void LoadPlugin(AssemblyName assemblyName)
-        {
-            Log($"LOADING PLUGIN {assemblyName.Name}");
-            this.LoadFromStream(PluginManager.GetAssemblyMemoryStreamFromFile(assemblyName));
-            Log($"LOADED PLUGIN {assemblyName.Name}");
-        }
-    }
-
-    public class Program
-    {
-        private static void Main(string[] args)
-        {
-            ExecutePlugin();
-        }
-
         public static void ExecutePlugin()
         {
             var context = new PluginLoadContext(name: "Sandbox", isCollectible: false);
@@ -71,6 +51,22 @@ namespace TinyApplication
             });
 
         }
+
+        public void LoadPlugin(AssemblyName assemblyName)
+        {
+            Log($"LOADING PLUGIN {assemblyName.Name}");
+            this.LoadFromStream(PluginManager.GetAssemblyMemoryStreamFromFile(assemblyName));
+            Log($"LOADED PLUGIN {assemblyName.Name}");
+        }
+    }
+
+    public class Program
+    {
+        private static void Main(string[] args)
+        {
+            PluginLoadContext.ExecutePlugin();
+        }
+
     }
 
     public static class PluginManager
