@@ -21,7 +21,7 @@ namespace TinyApplication
         private static System.Reflection.Assembly Context_Resolving(AssemblyLoadContext context, System.Reflection.AssemblyName assemblyName)
         {
             Log($"RESOLVING ASSEMBLY: {assemblyName.FullName} at {context.Name}");
-            var assembly = Assembly.Load(PluginManager.GetAssemblyByteArrayFromFile(assemblyName));
+            var assembly = Assembly.Load(GetAssemblyByteArrayFromFile(assemblyName));
             Log($"RESOLVED ASSEMBLY: {assembly.FullName} at {context.Name}");
             return assembly;
         }
@@ -54,8 +54,30 @@ namespace TinyApplication
         public void LoadPlugin(AssemblyName assemblyName)
         {
             Log($"LOADING PLUGIN {assemblyName.Name}");
-            this.LoadFromStream(PluginManager.GetAssemblyMemoryStreamFromFile(assemblyName));
+            this.LoadFromStream(GetAssemblyMemoryStreamFromFile(assemblyName));
             Log($"LOADED PLUGIN {assemblyName.Name}");
+        }
+
+        public static byte[] GetAssemblyByteArrayFromFile(AssemblyName name)
+        {
+            return File.ReadAllBytes(GetPluginPath(name));
+        }
+
+        public static Stream GetAssemblyMemoryStreamFromFile(AssemblyName name)
+        {
+            var rawStream = new MemoryStream();
+            using (var fs = new FileStream(GetPluginPath(name), FileMode.Open))
+            {
+                fs.CopyTo(rawStream);
+            }
+            rawStream.Position = 0;
+            return rawStream;
+
+        }
+
+        private static string GetPluginPath(AssemblyName name)
+        {
+            return @$"D:\repos\dotnet-dynamic-assembly-loading\release\plugins\netstandard2.0\{name.Name}.dll";
         }
     }
 
@@ -117,18 +139,6 @@ namespace TinyApplication
                 Log("RETURN Get Assembly Stream");
                 return rawStream;
             }
-        }
-
-        public static Stream GetAssemblyMemoryStreamFromFile(AssemblyName name)
-        {
-            var rawStream = new MemoryStream();
-            using (var fs = new FileStream(GetPluginPath(name), FileMode.Open))
-            {
-                fs.CopyTo(rawStream);
-            }
-            rawStream.Position = 0;
-            return rawStream;
-
         }
 
         public static byte[] GetAssemblyByteArrayFromFile(AssemblyName name)
