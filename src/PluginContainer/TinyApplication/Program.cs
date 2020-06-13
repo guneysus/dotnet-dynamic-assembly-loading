@@ -10,6 +10,27 @@ using static TinyApplication.Helpers;
 
 namespace TinyApplication
 {
+    public class PluginLoadContext : AssemblyLoadContext
+    {
+        public PluginLoadContext(string? name, bool isCollectible = false) : base(name, isCollectible)
+        {
+            this.Resolving += Context_Resolving;
+            this.Unloading += Context_Unloading;
+        }
+
+        private static System.Reflection.Assembly Context_Resolving(AssemblyLoadContext context, System.Reflection.AssemblyName assemblyName)
+        {
+            Log($"RESOLVING ASSEMBLY: {assemblyName.FullName} at {context.Name}");
+            var assembly = Assembly.Load(PluginManager.GetAssemblyByteArrayFromFile(assemblyName));
+            Log($"RESOLVED ASSEMBLY: {assembly.FullName} at {context.Name}");
+            return assembly;
+        }
+
+        private static void Context_Unloading(AssemblyLoadContext self)
+        {
+            Log($"UNLOADING {self.Name}");
+        }
+    }
 
     public class Program
     {
@@ -20,9 +41,10 @@ namespace TinyApplication
 
         public static void ExecutePlugin()
         {
-            var context = new AssemblyLoadContext(name: "Sandbox", isCollectible: false);
-            context.Resolving += Context_Resolving;
-            context.Unloading += Context_Unloading;
+            var context = new PluginLoadContext(name: "Sandbox", isCollectible: false);
+
+            //context.Resolving += Context_Resolving;
+            //context.Unloading += Context_Unloading;
 
             LoadPlugin(context, new AssemblyName("HelloPlugin"));
 
@@ -33,26 +55,26 @@ namespace TinyApplication
                 {
                     Log($"EXPORTED TYPE: {x.Name}");
                 });
-                Log($"INVOKING ENTRYPOINT of {x.FullName}");
 
+                Log($"INVOKING ENTRYPOINT of {x.FullName}");
                 x.EntryPoint.Invoke(null, new object[] { new string[] { } });
 
             });
 
         }
 
-        private static void Context_Unloading(AssemblyLoadContext self)
-        {
-            Log($"UNLOADING {self.Name}");
-        }
+        //private static void Context_Unloading(AssemblyLoadContext self)
+        //{
+        //    Log($"UNLOADING {self.Name}");
+        //}
 
-        private static System.Reflection.Assembly Context_Resolving(AssemblyLoadContext context, System.Reflection.AssemblyName assemblyName)
-        {
-            Log($"RESOLVING ASSEMBLY: {assemblyName.FullName} at {context.Name}");
-            var assembly = Assembly.Load(PluginManager.GetAssemblyByteArrayFromFile(assemblyName));
-            Log($"RESOLVED ASSEMBLY: {assembly.FullName} at {context.Name}");
-            return assembly;
-        }
+        //private static System.Reflection.Assembly Context_Resolving(AssemblyLoadContext context, System.Reflection.AssemblyName assemblyName)
+        //{
+        //    Log($"RESOLVING ASSEMBLY: {assemblyName.FullName} at {context.Name}");
+        //    var assembly = Assembly.Load(PluginManager.GetAssemblyByteArrayFromFile(assemblyName));
+        //    Log($"RESOLVED ASSEMBLY: {assembly.FullName} at {context.Name}");
+        //    return assembly;
+        //}
 
 
     }
@@ -126,7 +148,7 @@ namespace TinyApplication
 
         private static string GetPluginPath(AssemblyName name)
         {
-            return @$"D:\repos\dotnet-dynamic-assembly-loading\plugins\netstandard2.0\{name.Name}.dll";
+            return @$"D:\repos\dotnet-dynamic-assembly-loading\release\plugins\netstandard2.0\{name.Name}.dll";
         }
     }
 

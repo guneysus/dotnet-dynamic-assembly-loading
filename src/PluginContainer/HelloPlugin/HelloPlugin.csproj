@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\plugins\</OutputPath>
+    <OutputPath>..\..\..\release\plugins\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,8 +1,7 @@
 {
   "profiles": {
     "TinyApplication": {
-      "commandName": "Project",
-      "workingDirectory": "D:\\repos\\dotnet-dynamic-assembly-loading\\plugins\\netstandard2.0"
+      "commandName": "Project"
     }
   }
 }
