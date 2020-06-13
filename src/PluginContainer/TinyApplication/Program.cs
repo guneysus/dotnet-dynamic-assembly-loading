@@ -31,24 +31,23 @@ namespace TinyApplication
             Log($"UNLOADING {self.Name}");
         }
 
-        public static void ExecutePlugin(AssemblyName assemblyName)
+        public static void Execute(AssemblyName assemblyName)
         {
             var context = new PluginLoadContext(name: "Sandbox", isCollectible: false);
 
             context.LoadPlugin(assemblyName);
 
-            context.Assemblies.ToList().ForEach(x =>
-            {
-                Log($"LOADED ASSEMBLY {x.FullName}");
-                x.ExportedTypes.ToList().ForEach(x =>
+            var plugin = context.Assemblies.First(x => x.GetName().Name == assemblyName.Name);
+
+            Log($"LOADED ASSEMBLY {plugin.FullName}");
+            plugin.ExportedTypes.ToList().ForEach(x =>
                 {
                     Log($"EXPORTED TYPE: {x.Name}");
                 });
 
-                Log($"INVOKING ENTRYPOINT of {x.FullName}");
-                x.EntryPoint.Invoke(null, new object[] { new string[] { } });
+            Log($"INVOKING ENTRYPOINT of {plugin.FullName}");
+            plugin.EntryPoint.Invoke(null, new object[] { new string[] { } });
 
-            });
 
         }
 
@@ -65,7 +64,7 @@ namespace TinyApplication
         private static void Main(string[] args)
         {
             var plugin = new AssemblyName("HelloPlugin");
-            PluginLoadContext.ExecutePlugin(plugin);
+            PluginLoadContext.Execute(plugin);
         }
 
     }
