@@ -11,13 +11,24 @@ namespace TinyAgent
 
     public static class AssemblyLoadContextExtensions
     {
-        public static MemoryStream GetGzippedPlugin(this GistPluginContextManager context,
+        public static MemoryStream GetGzippedPluginFromGist(this GistPluginContextManager context,
             AssemblyName assemblyName)
         {
             var uri = $"https://gist.githubusercontent.com/guneysus/{context.Gist}/raw/{assemblyName.Name}.dll.gz";
+            return GetStreamFromUri(uri);
+        }
+
+        public static MemoryStream GetGzippedPluginFromGithub(this GithubPluginContextManager context,
+            AssemblyName assemblyName)
+        {
+            var uri = $"https://github.com/{context.User}/{context.Repo}/raw/master/plugins/{assemblyName.Name}/latest/{assemblyName.Name}.dll.gz";
+            return GetStreamFromUri(uri);
+        }
+
+        public static MemoryStream GetStreamFromUri(string uri)
+        {
             using (var http = new HttpClient())
             {
-
                 //var response = http.GetStringAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
                 // var response = http.GetStreamAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult(); // Not supported :(
 
