@@ -11,11 +11,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\..\release\plugins\</OutputPath>
+    <OutputPath>..\..\release\plugins\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\..\release\plugins\</OutputPath>
+    <OutputPath>..\..\release\plugins\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
