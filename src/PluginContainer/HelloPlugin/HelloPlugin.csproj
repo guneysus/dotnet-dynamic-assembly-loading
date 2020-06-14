@@ -7,10 +7,14 @@
     <OutputType>Exe</OutputType>
     <StartupObject>HelloPlugin.HelloPlugin</StartupObject>
     <NoWin32Manifest>true</NoWin32Manifest>
-    <ApplicationIcon>949232-white-bg.ico</ApplicationIcon>
+    <ApplicationIcon></ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\release\plugins\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\..\release\plugins\</OutputPath>
   </PropertyGroup>
 
@@ -20,10 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TinyPlugin\TinyPlugin.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

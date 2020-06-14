@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "TinyApplication": {
+    "HelloPlugin": {
       "commandName": "Project"
     }
   }
