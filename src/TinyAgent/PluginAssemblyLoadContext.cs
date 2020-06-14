@@ -18,11 +18,22 @@ namespace TinyAgent
 
         public static AssemblyLoadContext New(
             string? name = null,
-            bool isCollectible = false,
             Func<AssemblyLoadContext, AssemblyName, Assembly?>? resolving = null)
         {
-            var context = new AssemblyLoadContext(name, isCollectible);
-            context.Resolving += Dependency_Resolving;
+            var context = new AssemblyLoadContext(name, true);
+
+            context.Resolving += (AssemblyLoadContext context, AssemblyName asm) =>
+            {
+                var path = Path.Combine("lib", asm.Name, $"{string.Join('.', asm.Version.Major, asm.Version.Minor)}", $"{asm.Name}.dll");
+
+                using var fs = new FileStream(path, FileMode.Open);
+                using var ms = new MemoryStream();
+                fs.CopyTo(ms);
+                ms.Position = 0;
+
+                return context.LoadFromStream(ms);
+            };
+
             return context;
         }
 

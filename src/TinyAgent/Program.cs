@@ -22,7 +22,7 @@ namespace TinyAgent
                 var githubPluginManager = PluginContextManager.NewGithubPluginContextManager(
                     "guneysus",
                     repo: "dotnet-core-plugins",
-                    context: AssemblyLoadContextFactory.New(isCollectible: true),
+                    context: AssemblyLoadContextFactory.New(),
                     cache: true
                     );
 
@@ -37,9 +37,13 @@ namespace TinyAgent
                 //helloPluginStream.Load(pluginManager.Context);
 
                 // gistPluginManager.Execute(new AssemblyName("HelloPlugin"), "HelloPlugin");
-                githubPluginManager.Execute(new AssemblyName("HelloAlertPlugin"), "HelloAlertPlugin");
+                githubPluginManager.Execute(new AssemblyName("HelloPlugin"), "HelloPlugin");
 
+                //gistPluginManager.Execute(new AssemblyName("HelloAlertPlugin"), "HelloAlertPlugin");
+                //githubPluginManager.Execute(new AssemblyName("HelloAlertPlugin"), "HelloAlertPlugin");
                 Console.ReadKey();
+
+                githubPluginManager.Unload();
             }
         }
     }

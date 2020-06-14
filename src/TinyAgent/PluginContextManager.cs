@@ -28,6 +28,12 @@ namespace TinyAgent
             }
         }
 
+        public void Unload()
+        {
+            Context.Unload();
+            this.Context = null;
+        }
+
         public static GistPluginContextManager NewGistPluginContextManager(
             string gist,
             AssemblyLoadContext context,
