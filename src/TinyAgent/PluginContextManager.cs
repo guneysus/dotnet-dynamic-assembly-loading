@@ -12,15 +12,34 @@ namespace TinyAgent
     {
         protected AssemblyLoadContext Context;
         protected DirectoryInfo _cacheDir;
+        public bool Cache { get; protected set; }
+
         protected PluginContextManager() { }
 
+        protected PluginContextManager(AssemblyLoadContext context, bool cache)
+        {
+            this.Context = context;
+            this.Cache = cache;
+
+            if (Cache)
+            {
+                this._cacheDir = new DirectoryInfo(".cache");
+                if (!_cacheDir.Exists) _cacheDir.Create();
+            }
+        }
 
         public static GistPluginContextManager NewGistPluginContextManager(
             string gist,
             AssemblyLoadContext context,
             bool enableCache = false) => new GistPluginContextManager(gist, context, enableCache);
 
-        protected static string GetVersionString(AssemblyName assemblyName)
+        public static GithubPluginContextManager NewGithubPluginContextManager(
+            string user,
+            string repo,
+            AssemblyLoadContext context,
+            bool cache = false) => new GithubPluginContextManager(user, repo, context, cache);
+
+        protected string GetVersionString(AssemblyName assemblyName)
         {
             string version = string.Empty;
 
@@ -37,6 +56,53 @@ namespace TinyAgent
             }
             return version;
 
+        }
+
+        public void Execute(
+            AssemblyName assemblyName,
+            string pluginName)
+        {
+            Assembly plugin = Context.Assemblies.FirstOrDefault(x => x.GetName().Name == assemblyName.Name);
+
+            if (plugin == null)
+            {
+                MemoryStream pluginStream = null;
+
+                if (Cache && PluginExistsInCache(assemblyName))
+                {
+                    using var fs = new FileStream(GetPluginPath(assemblyName), FileMode.Open);
+                    pluginStream = new MemoryStream();
+                    fs.CopyTo(pluginStream);
+                    pluginStream.Position = 0;
+
+                }
+                else
+                {
+                    pluginStream = this.FetchPlugin(assemblyName);
+
+                    if (_cacheDir != default)
+                    {
+                        CachePlugin(assemblyName, pluginStream);
+                        pluginStream.Seek(0, SeekOrigin.Begin);
+                    }
+                }
+
+
+
+                pluginStream.Load(Context);
+                plugin = Context.Assemblies.FirstOrDefault(x => x.GetName().Name == assemblyName.Name);
+            }
+
+            object instance = plugin
+                .ExportedTypes
+                .First(x => x.Name == pluginName)
+                .GetConstructor(new Type[] { }).Invoke(new object[] { });
+
+            MethodInfo ctor = instance
+                .GetType()
+                .GetMethod("Run");
+
+            ctor.Invoke(instance, new object[] { });
         }
 
         protected void CachePlugin(
@@ -102,6 +168,41 @@ namespace TinyAgent
             var path = GetPluginPath(assemblyName);
             return File.Exists(path);
         }
+
+        protected MemoryStream GetStreamFromUri(string uri)
+        {
+            using (var http = new HttpClient())
+            {
+                //var response = http.GetStringAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
+                // var response = http.GetStreamAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult(); // Not supported :(
+
+                using (var task = http.GetAsync(uri))
+                {
+                    using (HttpResponseMessage response = task.ConfigureAwait(false).GetAwaiter().GetResult())
+                    {
+                        //HttpResponseMessage response = ; // Not supported :(
+
+                        var rawStream = new MemoryStream();
+
+                        response.Content.CopyToAsync(rawStream).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                        rawStream.Position = 0;
+
+                        var gunzipStream = new MemoryStream();
+                        using (var gz = new GZipStream(rawStream, CompressionMode.Decompress))
+                        {
+                            gz.CopyTo(gunzipStream);
+                        }
+
+                        gunzipStream.Position = 0;
+                        rawStream.Dispose();
+                        return gunzipStream;
+                    }
+                }
+            }
+        }
+
+        protected abstract MemoryStream FetchPlugin(AssemblyName assemblyName);
 
     }
 }

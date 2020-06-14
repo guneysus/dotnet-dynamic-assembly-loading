@@ -14,12 +14,17 @@ namespace TinyAgent
         {
             for (; ; )
             {
-                var pluginManager = GistPluginContextManager.NewGistPluginContextManager(
-                    gist: "a6d1cd71142d9c2c8c6533cb918f1ca2",
+                //var gistPluginManager = PluginContextManager.NewGistPluginContextManager(
+                //    gist: "a6d1cd71142d9c2c8c6533cb918f1ca2",
+                //    context: AssemblyLoadContextFactory.New(isCollectible: true),
+                //    cache: true);
+
+                var githubPluginManager = PluginContextManager.NewGithubPluginContextManager(
+                    "guneysus",
+                    repo: "dotnet-core-plugins",
                     context: AssemblyLoadContextFactory.New(isCollectible: true),
-                    enableCache: true
+                    cache: true
                     );
-                // https://github.com/guneysus/dotnet-core-plugins/raw/master/plugins/HelloPlugin/latest/HelloPlugin.dll
 
                 //var helloPluginStream = pluginManager
                 //    .GetGzippedPlugin(
@@ -31,11 +36,9 @@ namespace TinyAgent
                 //pluginManager.GetGzippedPlugin(new AssemblyName("HelloPlugin")).Load(pluginManager.Context);
                 //helloPluginStream.Load(pluginManager.Context);
 
+                // gistPluginManager.Execute(new AssemblyName("HelloPlugin"), "HelloPlugin");
+                githubPluginManager.Execute(new AssemblyName("HelloPlugin"), "HelloPlugin");
 
-                pluginManager.Execute(new AssemblyName("HelloPlugin")
-                {
-                    Version = new Version(0, 0)
-                }, "HelloPlugin");
                 Console.ReadKey();
             }
         }

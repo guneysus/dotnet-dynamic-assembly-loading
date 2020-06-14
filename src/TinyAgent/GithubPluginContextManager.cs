@@ -11,7 +11,22 @@ namespace TinyAgent
 
     public class GithubPluginContextManager : PluginContextManager
     {
-        public readonly string Repo;
-        public readonly string User;
+        public string Repo { get; protected set; }
+        public string User { get; protected set; }
+
+        public GithubPluginContextManager(string user,
+            string repo,
+            AssemblyLoadContext context,
+            bool enableCache) : base(context, enableCache)
+        {
+            this.User = user;
+            this.Repo = repo;
+        }
+
+        protected override MemoryStream FetchPlugin(AssemblyName assemblyName)
+        {
+            var uri = $"https://github.com/{this.User}/{this.Repo}/raw/master/plugins/{assemblyName.Name}/latest/{assemblyName.Name}.dll.gz";
+            return GetStreamFromUri(uri);
+        }
     }
 }

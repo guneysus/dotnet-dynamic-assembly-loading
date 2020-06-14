@@ -16,7 +16,10 @@ namespace TinyAgent
             return AssemblyLoadContext.Default;
         }
 
-        public static AssemblyLoadContext New(string? name = null, bool isCollectible = false, Func<AssemblyLoadContext, AssemblyName, Assembly?>? resolving = null)
+        public static AssemblyLoadContext New(
+            string? name = null,
+            bool isCollectible = false,
+            Func<AssemblyLoadContext, AssemblyName, Assembly?>? resolving = null)
         {
             var context = new AssemblyLoadContext(name, isCollectible);
             context.Resolving += Dependency_Resolving;
