@@ -54,7 +54,8 @@ namespace TinyApplication
         public void LoadPlugin(AssemblyName assemblyName)
         {
             Log($"LOADING PLUGIN {assemblyName.Name}");
-            this.LoadFromStream(GetAssemblyMemoryStreamFromFile(assemblyName));
+            //this.LoadFromStream(GetAssemblyMemoryStreamFromFile(assemblyName));
+            this.LoadFromStream(GetAssemblyMemoryStreamFromGIST(assemblyName, "a6d1cd71142d9c2c8c6533cb918f1ca2", true));
             Log($"LOADED PLUGIN {assemblyName.Name}");
         }
 
@@ -79,20 +80,7 @@ namespace TinyApplication
         {
             return @$"D:\repos\dotnet-dynamic-assembly-loading\release\plugins\netstandard2.0\{name.Name}.dll";
         }
-    }
 
-    public class Program
-    {
-        private static void Main(string[] args)
-        {
-            var plugin = new AssemblyName("HelloPlugin");
-            PluginLoadContext.Execute(plugin);
-        }
-
-    }
-
-    public static class PluginManager
-    {
         public static async Task<MemoryStream> GetAssemblyMemoryStreamAsync(AssemblyName name)
         {
             using (var http = new HttpClient())
@@ -113,43 +101,56 @@ namespace TinyApplication
             }
         }
 
-        public static MemoryStream GetAssemblyMemoryStreamFromURL(AssemblyName name, string pluginsBaseUrl = "https://gist.githubusercontent.com/guneysus/3e598b15a673b44bdfac22b17602df3d/raw")
+        public static Stream GetAssemblyMemoryStreamFromGIST(AssemblyName assemblyName, string gistId, bool gzipped = false)
         {
+            var suffix = gzipped ? ".gz" : string.Empty;
+            var uri = $"https://gist.githubusercontent.com/guneysus/{gistId}/raw/{assemblyName.Name}.dll{suffix}";
+
             Log("START Get Assembly Stream");
 
             using (var http = new HttpClient())
             {
-                var uri = new Uri(new Uri(pluginsBaseUrl), relativeUri: "TinyLib.dll-1.0.2.dll.b64.gz");
 
                 Log("DOWNLOAD STARTING");
-                var response = http.GetStringAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
+                //var response = http.GetStringAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
+                // var response = http.GetStreamAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult(); // Not supported :(
+                var response = http.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult(); // Not supported :(
                 Log("DOWNLOAD FINISHED");
-
-                var rawCompressedAssembly = Convert.FromBase64String(response);
 
                 var rawStream = new MemoryStream();
 
-                using (var gz = new GZipStream(new MemoryStream(rawCompressedAssembly), CompressionMode.Decompress))
+                response.Content.CopyToAsync(rawStream).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                if (gzipped)
                 {
-                    gz.CopyTo(rawStream);
+                    rawStream.Position = 0;
+
+                    var gunzipStream = new MemoryStream();
+                    using (var gz = new GZipStream(rawStream, CompressionMode.Decompress))
+                    {
+                        gz.CopyTo(gunzipStream);
+                    }
+
+                    gunzipStream.Position = 0;
+                    rawStream = null;
+                    return gunzipStream;
                 }
 
-                rawStream.Position = 0;
 
                 Log("RETURN Get Assembly Stream");
                 return rawStream;
             }
         }
+    }
 
-        public static byte[] GetAssemblyByteArrayFromFile(AssemblyName name)
+    public class Program
+    {
+        private static void Main(string[] args)
         {
-            return File.ReadAllBytes(GetPluginPath(name));
+            var plugin = new AssemblyName("HelloPlugin");
+            PluginLoadContext.Execute(plugin);
         }
 
-        private static string GetPluginPath(AssemblyName name)
-        {
-            return @$"D:\repos\dotnet-dynamic-assembly-loading\release\plugins\netstandard2.0\{name.Name}.dll";
-        }
     }
 
 

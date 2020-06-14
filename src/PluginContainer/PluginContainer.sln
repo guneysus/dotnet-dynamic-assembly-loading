@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyApplication", "TinyApplication\TinyApplication.csproj", "{0DEBE5F5-B62D-4BDD-B548-89D4364FF34C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4B50D3DA-5145-4369-8E00-A7B91814F2D3} = {4B50D3DA-5145-4369-8E00-A7B91814F2D3}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyPlugin", "TinyPlugin\TinyPlugin.csproj", "{FFFFB68A-288C-4156-9971-EC9EFE597C2E}"
 EndProject
