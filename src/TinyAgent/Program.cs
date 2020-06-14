@@ -16,7 +16,9 @@ namespace TinyAgent
             {
                 GistPluginContextManager pluginManager = GistPluginContextManager.New(
                     gist: "a6d1cd71142d9c2c8c6533cb918f1ca2",
-                    context: AssemblyLoadContextFactory.New(isCollectible: true));
+                    context: AssemblyLoadContextFactory.New(isCollectible: true),
+                    cacheDir: "cache"
+                    );
 
                 //var helloPluginStream = pluginManager
                 //    .GetGzippedPlugin(

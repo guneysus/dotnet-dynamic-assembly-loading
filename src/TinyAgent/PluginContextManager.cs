@@ -14,15 +14,19 @@ namespace TinyAgent
         public readonly AssemblyLoadContext Context;
         public readonly string Gist;
 
-        public GistPluginContextManager(string gist, AssemblyLoadContext context)
+        public GistPluginContextManager(string gist, AssemblyLoadContext context, string? cacheDir)
         {
             Gist = gist;
             this.Context = context;
+            if (!string.IsNullOrEmpty(cacheDir))
+            {
+                throw new NotImplementedException();
+            }
         }
 
         protected GistPluginContextManager() { }
 
-        public static GistPluginContextManager New(string gist, AssemblyLoadContext context) => new GistPluginContextManager(gist, context);
+        public static GistPluginContextManager New(string gist, AssemblyLoadContext context, string? cacheDir = null) => new GistPluginContextManager(gist, context, cacheDir);
 
         public void Execute(AssemblyName assemblyName, string pluginName)
         {
