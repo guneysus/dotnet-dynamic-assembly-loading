@@ -146,6 +146,13 @@ namespace TinyAgent
             Assembly assembly = Assembly.Load(ms.ToArray());
 
             string specificVersionPluginPath = GetPluginPath(assembly.GetName());
+
+            if (specificVersionPluginPath == path)
+            {
+                // Plugin assembly version is 0.0.0.0
+                return;
+            }
+
             var specificVersionCacheDir = Path.GetDirectoryName(specificVersionPluginPath);
 
             if (!Directory.Exists(specificVersionCacheDir))

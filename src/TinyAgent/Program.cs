@@ -37,7 +37,7 @@ namespace TinyAgent
                 //helloPluginStream.Load(pluginManager.Context);
 
                 // gistPluginManager.Execute(new AssemblyName("HelloPlugin"), "HelloPlugin");
-                githubPluginManager.Execute(new AssemblyName("HelloPlugin"), "HelloPlugin");
+                githubPluginManager.Execute(new AssemblyName("HelloAlertPlugin"), "HelloAlertPlugin");
 
                 Console.ReadKey();
             }
