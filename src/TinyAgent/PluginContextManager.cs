@@ -10,96 +10,38 @@ namespace TinyAgent
 {
     public abstract class PluginContextManager
     {
+        protected AssemblyLoadContext Context;
         protected DirectoryInfo _cacheDir;
         protected PluginContextManager() { }
 
-    }
 
-    public class GithubPluginContextManager : PluginContextManager
-    {
-        public readonly string Repo;
-        public readonly string User;
-    }
-
-    public class GistPluginContextManager : PluginContextManager
-    {
-        public readonly AssemblyLoadContext Context;
-        public readonly string Gist;
-
-        public GistPluginContextManager(
+        public static GistPluginContextManager NewGistPluginContextManager(
             string gist,
             AssemblyLoadContext context,
-            bool enableCache = false)
+            bool enableCache = false) => new GistPluginContextManager(gist, context, enableCache);
+
+        protected static string GetVersionString(AssemblyName assemblyName)
         {
-            Gist = gist;
-            this.Context = context;
-            if (enableCache)
+            string version = string.Empty;
+
+            if (assemblyName.Version == null
+                || assemblyName.Version == new Version(0, 0)
+                || assemblyName.Version == new Version(0, 0, 0)
+                || assemblyName.Version == new Version(0, 0, 0, 0))
             {
-                this._cacheDir = new DirectoryInfo(".cache");
-                if (!_cacheDir.Exists) _cacheDir.Create();
+                version = "latest";
             }
-        }
-
-
-        public static GistPluginContextManager New(string gist, AssemblyLoadContext context, bool enableCache = false) => new GistPluginContextManager(gist, context, enableCache);
-
-        public void Execute(AssemblyName assemblyName, string pluginName)
-        {
-            Assembly plugin = Context.Assemblies.FirstOrDefault(x => x.GetName().Name == assemblyName.Name);
-
-            if (plugin == null)
+            else
             {
-                MemoryStream pluginStream = null;
-
-                if (PluginExistsInCache(assemblyName))
-                {
-                    using var fs = new FileStream(GetPluginPath(assemblyName), FileMode.Open);
-                    pluginStream = new MemoryStream();
-                    fs.CopyTo(pluginStream);
-                    pluginStream.Position = 0;
-
-                }
-                else
-                {
-                    pluginStream = this.GetGzippedPluginFromGist(assemblyName);
-
-                    if (_cacheDir != default)
-                    {
-                        CachePlugin(assemblyName, pluginStream);
-                        pluginStream.Seek(0, SeekOrigin.Begin);
-                    }
-                }
-
-
-
-                pluginStream.Load(Context);
-                plugin = Context.Assemblies.FirstOrDefault(x => x.GetName().Name == assemblyName.Name);
+                version = assemblyName.Version.ToString();
             }
+            return version;
 
-            object instance = plugin
-                .ExportedTypes
-                .First(x => x.Name == pluginName)
-                .GetConstructor(new Type[] { }).Invoke(new object[] { });
-
-            MethodInfo ctor = instance
-                .GetType()
-                .GetMethod("Run");
-
-            ctor.Invoke(instance, new object[] { });
         }
 
-        private bool PluginExistsInCache(AssemblyName assemblyName)
-        {
-            var path = GetPluginPath(assemblyName);
-            return File.Exists(path);
-        }
-
-        private string GetPluginPath(AssemblyName assemblyName)
-        {
-            return Path.Combine(_cacheDir.FullName, assemblyName.Name, GetVersionString(assemblyName), $"{assemblyName.Name}.dll");
-        }
-
-        private void CachePlugin(AssemblyName assemblyName, MemoryStream pluginStream)
+        protected void CachePlugin(
+            AssemblyName assemblyName,
+            MemoryStream pluginStream)
         {
             string path = GetPluginPath(assemblyName);
             string pluginDir = Path.GetDirectoryName(path);
@@ -122,7 +64,9 @@ namespace TinyAgent
 
         }
 
-        private void CopyAssemblyToSpecificVersionFolder(AssemblyName assemblyName, MemoryStream pluginStream)
+        protected void CopyAssemblyToSpecificVersionFolder(
+            AssemblyName assemblyName,
+            MemoryStream pluginStream)
         {
             var path = GetPluginPath(assemblyName);
 
@@ -148,23 +92,16 @@ namespace TinyAgent
             specificVersionFs.Close();
         }
 
-        private static string GetVersionString(AssemblyName assemblyName)
+        protected string GetPluginPath(AssemblyName assemblyName)
         {
-            string version = string.Empty;
-
-            if (assemblyName.Version == null
-                || assemblyName.Version == new Version(0, 0)
-                || assemblyName.Version == new Version(0, 0, 0)
-                || assemblyName.Version == new Version(0, 0, 0, 0))
-            {
-                version = "latest";
-            }
-            else
-            {
-                version = assemblyName.Version.ToString();
-            }
-            return version;
-
+            return Path.Combine(_cacheDir.FullName, assemblyName.Name, GetVersionString(assemblyName), $"{assemblyName.Name}.dll");
         }
+
+        protected bool PluginExistsInCache(AssemblyName assemblyName)
+        {
+            var path = GetPluginPath(assemblyName);
+            return File.Exists(path);
+        }
+
     }
 }
