@@ -6,6 +6,8 @@
     <FileVersion>0.0.0.0</FileVersion>
     <OutputType>Exe</OutputType>
     <StartupObject>HelloPlugin.HelloPlugin</StartupObject>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <ApplicationIcon>949232-white-bg.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,6 +20,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TinyPlugin\TinyPlugin.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

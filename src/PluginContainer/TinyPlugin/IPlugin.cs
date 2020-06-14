@@ -4,7 +4,6 @@ namespace TinyPlugin
 {
     public interface IPlugin
     {
-        void Load();
         void Run();
     }
 }
