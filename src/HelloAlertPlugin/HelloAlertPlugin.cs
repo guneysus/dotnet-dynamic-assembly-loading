@@ -12,11 +12,11 @@ namespace HelloAlertPlugin
         }
 
         [DllImport("User32.dll")]
-        static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, MB_TYPE uType);
+        public static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, MB_TYPE uType);
     }
 
     [Flags]
-    enum MB_TYPE
+    public enum MB_TYPE
     {
         MB_OK = 0x00000000,
         MB_ICONASTERISK = 0x00000040

@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloPlugin", "HelloPlugin\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyAgent", "TinyAgent\TinyAgent.csproj", "{F9B00EE7-4563-4355-87BB-1D8DEE790EE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloAlertPlugin", "HelloAlertPlugin\HelloAlertPlugin.csproj", "{398F5E74-978E-4D93-A9CF-FD77F7B584E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloAlertPlugin", "HelloAlertPlugin\HelloAlertPlugin.csproj", "{398F5E74-978E-4D93-A9CF-FD77F7B584E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicDispatch", "DynamicDispatch\DynamicDispatch.csproj", "{009CA3F5-406F-49D7-A681-0ED1655051BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{398F5E74-978E-4D93-A9CF-FD77F7B584E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{398F5E74-978E-4D93-A9CF-FD77F7B584E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{398F5E74-978E-4D93-A9CF-FD77F7B584E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{009CA3F5-406F-49D7-A681-0ED1655051BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{009CA3F5-406F-49D7-A681-0ED1655051BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{009CA3F5-406F-49D7-A681-0ED1655051BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{009CA3F5-406F-49D7-A681-0ED1655051BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
